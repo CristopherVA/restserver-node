@@ -96,11 +96,12 @@ const putUsuarios = async (req = request, res = response) => {
 
 const deleteUsuarios = async (req = request, res = response) => {
 
-    const { id } = req.params;
-    
-    const usuario = await Usuario.findByIdAndUpdate(id, {estado: false});
+    const { id } = req.params;  
 
-    res.json(usuario)
+    const usuario = await Usuario.findByIdAndUpdate(id, {estado: false});
+    res.json({
+        usuario
+    })
 }
 
 module.exports = {

@@ -5,6 +5,7 @@ const cors = require('cors');
 const { dbConection } = require('../database/config')
 
 const usuariosRouter = require('../routes/usuarios');
+const authRouter = require('../routes/auth');
 
 class Server {
 
@@ -14,6 +15,7 @@ class Server {
 
         // Path usuarios
         this.usuariosPath = '/api/usuarios';
+        this.authpath     = '/api/auth';
 
 
         // Conection DB
@@ -24,9 +26,7 @@ class Server {
 
         // Routes
         this.routes()
-
     }
-
 
     async conectarDB(){
         await dbConection()
@@ -44,8 +44,9 @@ class Server {
         this.app.use( express.static('public'))
 
     }
-
+ 
     routes() {
+        this.app.use(this.authpath, authRouter);
         this.app.use(this.usuariosPath, usuariosRouter);
     }
 

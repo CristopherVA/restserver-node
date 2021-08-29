@@ -34,10 +34,10 @@ const UsuarioSchema = Schema({
 
 
 // Funcions para sacar los valores de la respuesta del json en postman
-
 UsuarioSchema.methods.toJSON = function () {
-    const { __v, passowrd, ...usuario } = this.toObject();
-    return usuario
+    const { __v, passowrd, _id, ...usuario } = this.toObject();
+    usuario.uid = _id;  
+    return usuario;
 }
 
 module.exports = model('Usuario', UsuarioSchema)
