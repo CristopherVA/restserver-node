@@ -1,16 +1,57 @@
 const { Router } = require('express');
+const { check } = require('express-validator');
+
 const router = Router();
 
+// Controllers
 const {
     getUsuarios,
+    getUsuariosBorrados,
     postUsuarios,
     putUsuarios,
     deleteUsuarios
 } = require('../controllers/usuarios');
 
+// Helpers
+const { esCorreoValido, esRolValido, existeUsuarioPorId } = require('../helpers/db-validator');
+const { validarCampos } = require('../middlewares/validar-campos');
+
+// =============== GET =================
+
 router.get('/', getUsuarios);
-router.post('/', postUsuarios);
-router.put('/:id', putUsuarios);
-router.delete('/', deleteUsuarios);
+
+// =============== GET Borrrados =================
+
+router.get('/borrados', getUsuariosBorrados);
+
+// =============== POST =================
+
+router.post('/', [
+    check('nombre', 'El nombre es obligatorio').notEmpty(),
+    // check('correo', 'El correo no es valido').isEmail(),
+    check('correo').custom(correo => esCorreoValido(correo)),
+    check('password', 'El password debe de contener mas de 6 caracteres').isLength({ min: 6 }),
+    // check('rol', 'No es un rol valido').isIn(["ADMIN_ROLE", "USER_ROLE"]),
+    check('rol').custom(rol => esRolValido(rol)),
+    validarCampos
+],postUsuarios);
+
+// =============== PUT =================
+
+router.put('/:id', [
+    check('id', 'No es un ID valido').isMongoId(),
+    check('id').custom(existeUsuarioPorId),
+    check('rol').custom(rol => esRolValido(rol)),
+    validarCampos
+],putUsuarios);
+
+// =============== DELETE =================
+
+router.delete('/:id', [
+    check('id', 'No es un ID valido').isMongoId(),
+    check('id').custom(existeUsuarioPorId),
+    validarCampos
+],deleteUsuarios);
+
 
 module.exports = router;
