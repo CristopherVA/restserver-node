@@ -1,7 +1,7 @@
 const { request, response } = require("express");
 const { ObjectId } = require('mongoose').Types;
 const Usuario = require('../models/usuario');
-const Categora = require('../models/categoria');
+const Categoria = require('../models/categoria');
 const Producto = require('../models/producto');
 
 const coleccionesPermitidas = [
@@ -45,9 +45,7 @@ const buscarCategoria = async (termino = '', res = response) => {
 
     const regex = new RegExp(termino, 'i');
 
-    const categoria = await Categoria.find({
-        $or: [{nombre: regex}, {estado: true}]
-    })
+    const categoria = await Categoria.find({nombre: regex, estado: true})
 
     res.json(categoria)
 }
@@ -57,8 +55,7 @@ const buscarProducto = async (termino = '', res = response) => {
     const esMongoId = ObjectId.isValid(termino);
     
     if ( esMongoId ) {
-        const producto = await Producto.findById(termino)
-                                .populate('categoria', 'nombre')
+        const producto = await Producto.findById(termino).populate('categoria', 'nombre')
         res.json({
             results: (producto) ? [producto] : []
         })
@@ -79,7 +76,7 @@ const buscar = (req = request, res = response) => {
     const { coleccion, termino } = req.params;
 
     if (!coleccionesPermitidas.includes(coleccion)) {
-        return res.status(400).json({
+        return res.status(500).json({
             msg: `Las colecciones permitidas son ${coleccionesPermitidas}`
         })
     }
