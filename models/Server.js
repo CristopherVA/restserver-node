@@ -4,8 +4,11 @@ const cors = require('cors');
 
 const { dbConection } = require('../database/config')
 
-const usuariosRouter = require('../routes/usuarios');
 const authRouter = require('../routes/auth');
+const buscarRouter = require('../routes/buscar');
+const usuariosRouter = require('../routes/usuarios');
+const categoriasRouter = require('../routes/categorias');
+const productosRouter = require('../routes/productos');
 
 class Server {
 
@@ -14,9 +17,13 @@ class Server {
         this.port = process.env.PORT
 
         // Path usuarios
-        this.usuariosPath = '/api/usuarios';
-        this.authpath     = '/api/auth';
-
+        this.patchs = {
+            auth:       '/api/auth',
+            buscar:     '/api/buscar',
+            usuarios:   '/api/usuarios',
+            categorias: '/api/categorias',
+            productos:  '/api/productos'
+        }
 
         // Conection DB
         this.conectarDB()
@@ -46,8 +53,11 @@ class Server {
     }
  
     routes() {
-        this.app.use(this.authpath, authRouter);
-        this.app.use(this.usuariosPath, usuariosRouter);
+        this.app.use(this.patchs.auth, authRouter);
+        this.app.use(this.patchs.buscar, buscarRouter)
+        this.app.use(this.patchs.categorias, categoriasRouter);
+        this.app.use(this.patchs.usuarios, usuariosRouter);
+        this.app.use(this.patchs.productos, productosRouter)
     }
 
     listen(){
